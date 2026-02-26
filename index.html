@@ -1520,6 +1520,7 @@
     const style = el.dataset.style;
     if (el.classList.contains('selected')) {
       if (!answers.styles.includes(style)) answers.styles.push(style);
+      const e = document.getElementById('step1Error'); if(e) e.style.display = 'none';
     } else {
       answers.styles = answers.styles.filter(s => s !== style);
     }
@@ -1665,6 +1666,18 @@
     document.getElementById('rightDark').classList.remove('hidden');
     updateProgress(2, 2);
     updateTopBar(true);
+  }
+
+  // ─── STEP 1 VALIDATION ───
+  function validateStep1() {
+    if (!answers.styles || answers.styles.length === 0) {
+      const err = document.getElementById('step1Error');
+      err.style.display = 'flex';
+      err.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+    document.getElementById('step1Error').style.display = 'none';
+    goToStep(2);
   }
 
   // ─── STEPS 3-4-5 VALIDATION ───
