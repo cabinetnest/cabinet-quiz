@@ -652,53 +652,47 @@
 
   /* ─── RESPONSIVE ─── */
   @media (max-width: 900px) {
-    /* Stack vertically on mobile */
-    .quiz-wrapper { flex-direction: column; min-height: 100vh; }
+    .quiz-wrapper { flex-direction: column; align-items: stretch; }
 
-    /* Left panel: only as tall as its content + footer */
-    .quiz-left { max-width: 100%; flex: none; box-shadow: none; width: 100%; }
-    .quiz-left-inner { padding: 24px; }
-    .quiz-topbar { padding: 18px 24px; }
-    .quiz-footer { padding: 20px 24px; }
-    .question-title { font-size: 26px; }
+    /* Dissolve quiz-left AND .step so all children flow into quiz-wrapper */
+    .quiz-left   { display: contents; }
+    .step.active { display: contents; }
 
-    /* Right panel: fill remaining viewport height */
-    .quiz-right {
-      flex: 1;
-      min-height: 0;
-      position: relative;
-    }
+    /* Order: topbar > progress > question content > choices (right panel) > footer */
+    .quiz-topbar     { order: 1; width: 100%; background: var(--white); padding: 18px 24px; border-bottom: 1px solid var(--border); box-sizing: border-box; }
+    .progress-bar    { order: 2; width: 100%; }
+    .quiz-left-inner { order: 3; width: 100%; padding: 24px; background: var(--white); box-sizing: border-box; }
+    .quiz-right      { order: 4; width: 100%; flex: none; position: relative; }
+    .quiz-footer     { order: 5; width: 100%; background: var(--white); border-top: 1px solid var(--border); padding: 20px 24px; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); box-sizing: border-box; }
 
-    /* Q1 image grid: fill the entire right panel */
+    /* Validation errors inside question-content still show fine */
+    .step.active .question-content { display: block; }
+
+    /* Q1 image grid */
     .image-grid-panel {
       position: relative;
       width: 100%;
-      height: 100%;
-      min-height: 60vh;
       padding: 12px;
       gap: 8px;
-      grid-template-rows: repeat(5, minmax(140px, 1fr));
+      grid-template-rows: repeat(5, 200px);
+      overflow-y: visible;
+      height: auto;
     }
 
-    .floorplan-grid { padding: 16px; }
-    .dark-bg-panel { min-height: 220px; }
-
-    /* Q2 mobile: layout cards move inside left panel, above footer */
-    .layout-grid-panel-mobile-wrapper {
-      display: block;
-      padding: 0 24px 20px;
-    }
+    /* Layout card grid */
     .layout-grid-panel {
       position: relative;
       width: 100%;
       height: auto;
-      min-height: 0;
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: auto;
-      padding: 0;
-      background: transparent;
+      padding: 14px;
       gap: 8px;
     }
+
+    .dark-bg-panel { min-height: 220px; position: relative; }
+    .question-title { font-size: 26px; }
+    #rightStep2 { display: none !important; }
   }
 
   @media (max-width: 480px) {
@@ -951,9 +945,13 @@
           </p>
         </div>
       </div>
+      <div id="step1Error" class="validation-error" style="display:none; margin: 0 24px 12px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.5" stroke-linecap="round"/></svg>
+        <span>Please select at least one design style to continue.</span>
+      </div>
       <div class="quiz-footer">
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="goToStep(2)">NEXT STEP</button>
+          <button class="btn btn-primary" onclick="validateStep1()">NEXT STEP</button>
         </div>
         <button class="btn btn-reset" onclick="resetQuiz()">
           <span class="reset-icon"></span>
@@ -1431,6 +1429,7 @@
 
   </div><!-- end quiz-right -->
 
+
 </div><!-- end quiz-wrapper -->
 
 <script>
@@ -1754,6 +1753,8 @@
     answers.floorPlanFiles = Array.from(files).map(f => f.name);
     document.getElementById('step2Error').style.display = 'none';
   }
+
+
 
 </script>
 </body>
